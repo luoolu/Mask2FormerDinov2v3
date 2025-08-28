@@ -89,6 +89,18 @@ def add_maskformer2_config(cfg):
     cfg.MODEL.SWIN.OUT_FEATURES = ["res2", "res3", "res4", "res5"]
     cfg.MODEL.SWIN.USE_CHECKPOINT = False
 
+    # DINOv2 backbone
+    cfg.MODEL.DINOV2 = CN()
+    cfg.MODEL.DINOV2.NAME = "dinov2_vits14"
+    cfg.MODEL.DINOV2.OUT_FEATURES = ["res5"]
+    cfg.MODEL.DINOV2.PRETRAINED = True
+
+    # DINOv3 backbone
+    cfg.MODEL.DINOV3 = CN()
+    cfg.MODEL.DINOV3.NAME = "dinov3_vits14"
+    cfg.MODEL.DINOV3.OUT_FEATURES = ["res5"]
+    cfg.MODEL.DINOV3.PRETRAINED = True
+
     # NOTE: maskformer2 extra configs
     # transformer module
     cfg.MODEL.MASK_FORMER.TRANSFORMER_DECODER_NAME = "MultiScaleMaskedTransformerDecoder"

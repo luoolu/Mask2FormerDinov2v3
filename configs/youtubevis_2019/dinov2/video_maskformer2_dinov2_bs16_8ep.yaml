@@ -1,0 +1,13 @@
+_BASE_: ../video_maskformer2_R50_bs16_8ep.yaml
+MODEL:
+  BACKBONE:
+    NAME: "D2Dinov2"
+  DINOV2:
+    NAME: "dinov2_vits14"
+    OUT_FEATURES: ["res5"]
+    PRETRAINED: True
+  WEIGHTS: "model_final_dinov2.pth"
+  PIXEL_MEAN: [123.675, 116.280, 103.530]
+  PIXEL_STD: [58.395, 57.120, 57.375]
+INPUT:
+  MIN_SIZE_TEST: 480
