@@ -3,11 +3,11 @@ MODEL:
   BACKBONE:
     NAME: "D2Dinov3"
   DINOV3:
-    NAME: "dinov3_vits14"
+    NAME: "dinov3_vit7b16"
     OUT_FEATURES: ["res5"]
-    PRETRAINED: True
-  WEIGHTS: "model_final_dinov3.pth"
+    PRETRAINED: True            # 若要从本地权重加载，可设 False 并自行加载
+  WEIGHTS: ""
   PIXEL_MEAN: [123.675, 116.280, 103.530]
-  PIXEL_STD: [58.395, 57.120, 57.375]
+  PIXEL_STD:  [58.395, 57.120, 57.375]
 INPUT:
   MIN_SIZE_TEST: 480
