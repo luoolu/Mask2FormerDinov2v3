@@ -248,6 +248,7 @@ class VideoMultiScaleMaskedTransformerDecoder(nn.Module):
         pre_norm: bool,
         mask_dim: int,
         enforce_input_project: bool,
+        num_feature_levels: int,
         # video related
         num_frames,
     ):
@@ -267,7 +268,8 @@ class VideoMultiScaleMaskedTransformerDecoder(nn.Module):
             mask_dim: mask feature dimension
             enforce_input_project: add input project 1x1 conv even if input
                 channels and hidden dim is identical
-        """
+            num_feature_levels: number of feature maps from the pixel decoder
+            """
         super().__init__()
 
         assert mask_classification, "Only support mask classification model"
@@ -322,8 +324,8 @@ class VideoMultiScaleMaskedTransformerDecoder(nn.Module):
         # learnable query p.e.
         self.query_embed = nn.Embedding(num_queries, hidden_dim)
 
-        # level embedding (we always use 3 scales)
-        self.num_feature_levels = 3
+        # level embedding for multi-scale features
+        self.num_feature_levels = num_feature_levels
         self.level_embed = nn.Embedding(self.num_feature_levels, hidden_dim)
         self.input_proj = nn.ModuleList()
         for _ in range(self.num_feature_levels):
@@ -362,6 +364,7 @@ class VideoMultiScaleMaskedTransformerDecoder(nn.Module):
         ret["enforce_input_project"] = cfg.MODEL.MASK_FORMER.ENFORCE_INPUT_PROJ
 
         ret["mask_dim"] = cfg.MODEL.SEM_SEG_HEAD.MASK_DIM
+        ret["num_feature_levels"] = cfg.MODEL.MASK_FORMER.NUM_FEATURE_LEVELS
 
         ret["num_frames"] = cfg.INPUT.SAMPLING_FRAME_NUM
 

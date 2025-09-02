@@ -24,10 +24,22 @@ class D2Dinov2(Backbone):
         self._out_feature_strides = {"res5": patch}
 
     def forward(self, x):
+        """Compute the final feature map from input image ``x``.
+
+        The original DINOv2 implementation assumes square inputs and infers the
+        spatial resolution from the number of tokens. Here we derive the height
+        and width directly from the input tensor so that rectangular images are
+        handled correctly.
+        """
+
         assert x.dim() == 4, f"DINOv2 takes an input of shape (N,C,H,W). Got {x.shape}"
         feats = self.model.forward_features(x)["x_norm_patchtokens"]
         b, n, c = feats.shape
-        h = w = int(n ** 0.5)
+        patch = self.model.patch_embed.patch_size
+        if isinstance(patch, tuple):
+            patch = patch[0]
+        h, w = x.shape[-2] // patch, x.shape[-1] // patch
+        feats = feats[:, : h * w]
         feats = feats.permute(0, 2, 1).reshape(b, c, h, w)
         return {"res5": feats}
 

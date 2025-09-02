@@ -103,6 +103,9 @@ class VideoPredictor(DefaultPredictor):
         """
         with torch.no_grad():  # https://github.com/sphinx-doc/sphinx/issues/4258
             input_frames = []
+            pad_h_max = 0
+            pad_w_max = 0
+            orig_height, orig_width = frames[0].shape[:2]
             for original_image in frames:
                 # Apply pre-processing to image.
                 if self.input_format == "RGB":
@@ -110,11 +113,27 @@ class VideoPredictor(DefaultPredictor):
                     original_image = original_image[:, :, ::-1]
                 height, width = original_image.shape[:2]
                 image = self.aug.get_transform(original_image).apply_image(original_image)
+
+                size_divisibility = self.cfg.MODEL.MASK_FORMER.SIZE_DIVISIBILITY
+                if size_divisibility > 0:
+                    pad_h = (size_divisibility - image.shape[0] % size_divisibility) % size_divisibility
+                    pad_w = (size_divisibility - image.shape[1] % size_divisibility) % size_divisibility
+                    if pad_h > 0 or pad_w > 0:
+                        image = cv2.copyMakeBorder(
+                            image, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=0
+                        )
                 image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
                 input_frames.append(image)
 
-            inputs = {"image": input_frames, "height": height, "width": width}
+            inputs = {"image": input_frames, "height": orig_height, "width": orig_width}
             predictions = self.model([inputs])
+            # remove any added padding from the predicted masks before visualization
+            if (pad_h_max > 0 or pad_w_max > 0) and "pred_masks" in predictions:
+                predictions["pred_masks"] = [
+                    m[:, : orig_height, : orig_width]
+                    for m in predictions["pred_masks"]
+                ]
+
             return predictions
 
 
