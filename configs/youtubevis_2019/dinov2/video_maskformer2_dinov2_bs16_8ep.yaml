@@ -3,10 +3,10 @@ MODEL:
   BACKBONE:
     NAME: "D2Dinov2"
   DINOV2:
-    NAME: "dinov2_vits14"
+    NAME: "dinov2_vitg14"            # ← 从 vits14 改为 vitg14
     OUT_FEATURES: ["res5"]
     PRETRAINED: True
-  WEIGHTS: "model_final_dinov2.pth"
+  WEIGHTS: "/media/luolu/3cc826d6-a968-4df2-9ae7-ee2c324675bd/home/xkjs/ModelDownload/dinov2_vitg14_reg4_pretrain.pth"  # ← 指向 ViT-g 的 Mask2Former 检查点
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
 INPUT:

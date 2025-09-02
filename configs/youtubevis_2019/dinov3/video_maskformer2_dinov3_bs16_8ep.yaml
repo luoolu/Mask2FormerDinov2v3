@@ -10,4 +10,6 @@ MODEL:
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD:  [58.395, 57.120, 57.375]
 INPUT:
-  MIN_SIZE_TEST: 480
+  MIN_SIZE_TEST: 480          # 你已有
+  SIZE_DIVISIBILITY: 16       # 新增：让 ImageList 自动 pad 到 16 的倍数
+
