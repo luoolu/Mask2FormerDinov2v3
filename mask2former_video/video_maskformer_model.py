@@ -182,7 +182,26 @@ class VideoMaskFormer(nn.Module):
             for frame in video["image"]:
                 images.append(frame.to(self.device))
         images = [(x - self.pixel_mean) / self.pixel_std for x in images]
-        images = ImageList.from_tensors(images, self.size_divisibility)
+        # Ensure divisibility by both model.size_divisibility and backbone patch size (e.g., DINOv2 14)
+        effective_div = self.size_divisibility if self.size_divisibility and self.size_divisibility > 0 else 0
+        try:
+            # Try to read DINOv2 patch size if available
+            patch_size = None
+            if hasattr(self.backbone, "model") and hasattr(self.backbone.model, "patch_embed"):
+                ps = getattr(self.backbone.model.patch_embed, "patch_size", None)
+                if isinstance(ps, (tuple, list)) and len(ps) > 0:
+                    patch_size = int(ps[0])
+                elif isinstance(ps, int):
+                    patch_size = ps
+            if patch_size and patch_size > 0:
+                if effective_div and effective_div > 0:
+                    effective_div = math.lcm(int(effective_div), int(patch_size))
+                else:
+                    effective_div = int(patch_size)
+        except Exception:
+            # Fall back silently if anything unexpected
+            pass
+        images = ImageList.from_tensors(images, effective_div)
 
         features = self.backbone(images.tensor)
         outputs = self.sem_seg_head(features)

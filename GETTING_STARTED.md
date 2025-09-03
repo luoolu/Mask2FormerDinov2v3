@@ -47,6 +47,10 @@ then run:
 ```
 python train_net.py --num-gpus 8 \
   --config-file configs/coco/panoptic-segmentation/maskformer2_R50_bs16_50ep.yaml
+  
+## dinov2 vitg14 training
+python train_net.py --num-gpus 2 \
+  --config-file configs/youtubevis_2019/dinov2/video_maskformer2_dinov2_bs16_8ep.yaml
 ```
 
 The configs are made for 8-GPU training.

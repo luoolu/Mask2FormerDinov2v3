@@ -19,3 +19,7 @@ python demo.py --config-file ../configs/youtubevis_2019/swin/video_maskformer2_s
 python demo.py --config-file ../configs/youtubevis_2019/swin/video_maskformer2_swin_large_IN21k_384_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg  --output output  --opts MODEL.WEIGHTS /home/luolu/ModelPretrain/model_final_c5c739.pkl；
 ## demo inference dinov2_vitg14
 python demo.py   --config-file ../configs/youtubevis_2019/dinov2/video_maskformer2_dinov2_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg   --output output
+
+## dinov2 vitg14 training
+python train_net_video.py --num-gpus 2 \
+  --config-file configs/youtubevis_2019/dinov2/video_maskformer2_dinov2_bs16_8ep.yaml

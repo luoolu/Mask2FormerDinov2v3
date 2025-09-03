@@ -11,5 +11,8 @@ MODEL:
   PIXEL_STD: [58.395, 57.120, 57.375]
   MASK_FORMER:
     NUM_FEATURE_LEVELS: 2
+DATASETS:
+  TRAIN: ("ytvis_2019_keli_train",)
+  TEST: ("ytvis_2019_keli_val",)
 INPUT:
   MIN_SIZE_TEST: 480

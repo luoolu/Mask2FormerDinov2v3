@@ -41,6 +41,20 @@ def register_all_ytvis_2019(root):
             os.path.join(root, image_root),
         )
 
+    # Also register optional custom splits (e.g., single-class) without preset metadata,
+    # so that categories from the json file (e.g., ["keli"]) are used directly.
+    custom_splits = {
+        "ytvis_2019_keli_train": ("ytvis_2019/train/JPEGImages", "ytvis_2019/train.json"),
+        "ytvis_2019_keli_val": ("ytvis_2019/valid/JPEGImages", "ytvis_2019/valid.json"),
+    }
+    for key, (image_root, json_file) in custom_splits.items():
+        register_ytvis_instances(
+            key,
+            {},  # do not preset thing_classes; let load_ytvis_json set from the annotation file
+            os.path.join(root, json_file) if "://" not in json_file else json_file,
+            os.path.join(root, image_root),
+        )
+
 
 def register_all_ytvis_2021(root):
     for key, (image_root, json_file) in _PREDEFINED_SPLITS_YTVIS_2021.items():

@@ -57,6 +57,7 @@ from mask2former import (
     SemanticSegmentorWithTTA,
     add_maskformer2_config,
 )
+from mask2former_video import add_maskformer2_video_config
 
 
 class Trainer(DefaultTrainer):
@@ -286,6 +287,8 @@ def setup(args):
     # for poly lr schedule
     add_deeplab_config(cfg)
     add_maskformer2_config(cfg)
+    # Add video-specific configs (e.g., INPUT.AUGMENTATIONS, sampling settings)
+    add_maskformer2_video_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
