@@ -6,6 +6,9 @@ import multiprocessing as mp
 from collections import deque
 import cv2
 import torch
+import math
+
+from detectron2.data.transforms import ResizeShortestEdge
 
 from visualizer import TrackVisualizer
 
@@ -92,6 +95,12 @@ class VideoPredictor(DefaultPredictor):
         inputs = cv2.imread("input.jpg")
         outputs = pred(inputs)
     """
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        self.aug = ResizeShortestEdge(
+            [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
+        )
+
     def __call__(self, frames):
         """
         Args:
@@ -114,10 +123,32 @@ class VideoPredictor(DefaultPredictor):
                 height, width = original_image.shape[:2]
                 image = self.aug.get_transform(original_image).apply_image(original_image)
 
-                size_divisibility = self.cfg.MODEL.MASK_FORMER.SIZE_DIVISIBILITY
-                if size_divisibility > 0:
-                    pad_h = (size_divisibility - image.shape[0] % size_divisibility) % size_divisibility
-                    pad_w = (size_divisibility - image.shape[1] % size_divisibility) % size_divisibility
+                # Ensure compatibility with both Mask2Former and DINOv2 patch embedding
+                size_divisibility = getattr(self.model, "size_divisibility", 0) or 0
+                # Try to read DINOv2 patch size from the backbone
+                patch_div = 0
+                try:
+                    backbone = getattr(self.model, "backbone", None)
+                    if backbone is not None and hasattr(backbone, "model"):
+                        ps = getattr(backbone.model.patch_embed, "patch_size", 0)
+                        if isinstance(ps, tuple):
+                            patch_div = int(ps[0])
+                        elif isinstance(ps, (int, float)):
+                            patch_div = int(ps)
+                except Exception:
+                    patch_div = 0
+
+                # Compute least common multiple if both constraints exist
+                if size_divisibility <= 0 and patch_div <= 0:
+                    effective_div = 0
+                elif size_divisibility > 0 and patch_div > 0:
+                    effective_div = math.lcm(int(size_divisibility), int(patch_div))
+                else:
+                    effective_div = int(size_divisibility or patch_div)
+
+                if effective_div and effective_div > 0:
+                    pad_h = (effective_div - image.shape[0] % effective_div) % effective_div
+                    pad_w = (effective_div - image.shape[1] % effective_div) % effective_div
                     if pad_h > 0 or pad_w > 0:
                         image = cv2.copyMakeBorder(
                             image, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=0

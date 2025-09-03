@@ -20,6 +20,10 @@ python demo.py --config-file ../configs/coco/panoptic-segmentation/maskformer2_R
   
  python demo.py --config-file ../configs/youtubevis_2019/swin/video_maskformer2_swin_large_IN21k_384_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg  --output output  --opts MODEL.WEIGHTS /home/luolu/ModelPretrain/model_final_c5c739.pkl
  python demo.py --config-file ../configs/youtubevis_2019/dinov3/video_maskformer2_dinov3_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg  --output output  --opts MODEL.WEIGHTS /home/luolu/ModelPretrain/model_final_c5c739.pkl
+## dinov2 vitg14 inference without training
+python demo.py   --config-file ../configs/youtubevis_2019/dinov2/video_maskformer2_dinov2_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg   --output output
+
+
 ```
 The configs are made for training, therefore we need to specify `MODEL.WEIGHTS` to a model from model zoo for evaluation.
 This command will run the inference and show visualizations in an OpenCV window.

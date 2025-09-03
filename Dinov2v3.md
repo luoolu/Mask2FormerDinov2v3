@@ -17,3 +17,5 @@ python demo.py --config-file ../configs/youtubevis_2019/swin/video_maskformer2_s
 3，使用预训练好的dinvov2 ViT-g模型做推理测试;如何用预训练好的模型做推理？
 比如swin我本地测试可以这样：
 python demo.py --config-file ../configs/youtubevis_2019/swin/video_maskformer2_swin_large_IN21k_384_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg  --output output  --opts MODEL.WEIGHTS /home/luolu/ModelPretrain/model_final_c5c739.pkl；
+## demo inference dinov2_vitg14
+python demo.py   --config-file ../configs/youtubevis_2019/dinov2/video_maskformer2_dinov2_bs16_8ep.yaml   --input /home/luolu/Pictures/7.jpg   --output output
